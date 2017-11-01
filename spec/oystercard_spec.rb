@@ -51,11 +51,6 @@ describe Oystercard do
       message = 'Insufficient balance for travel'
       expect { subject.touch_in(:station) }.to raise_error(message)
     end
-
-    it 'remembers the enrty station' do
-      topped_up_card.touch_in('Aldgate East')
-      expect(topped_up_card.entry_station).to eq 'Aldgate East'
-    end
   end
 
   describe '#touch_out' do
