@@ -6,7 +6,7 @@ describe Journey do
   let(:card) { Oystercard.new(journey) }
   let(:station) { double(:station) }
 
-  def top_up_and_in
+  def top_up_touch_in
     card.top_up(50)
     card.touch_in(station)
   end
@@ -18,20 +18,22 @@ describe Journey do
   end
 
   it 'knows if the journey is not complete' do
-
+    top_up_touch_in
+    expect(journey.in_journey?).to eq true
   end
 
   it 'has a penalty fare by default' do
 
   end
 
-  it "returns itself when exiting a journey" do
-
-  end
+  # it "returns itself when exiting a journey" do
+  #
+  # end
 
   context 'given an entry station' do
     it 'has an entry station' do
-
+      top_up_touch_in
+      expect(journey.entry_station).to eq station
     end
 
     it 'returns a penalty fare if no exit given' do
@@ -48,7 +50,6 @@ describe Journey do
 
       end
     end
-
 
 
   end
