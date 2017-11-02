@@ -83,7 +83,7 @@ describe Oystercard do
       topped_up_card.touch_out('B')
       topped_up_card.touch_in('C')
       topped_up_card.touch_out('D')
-      expected_hash = [{ 'A' => 'B' }, { 'C' => 'D' }]
+      expected_hash = [['A','B'],['C', 'D']]
       expect(topped_up_card.list_of_journeys).to eq(expected_hash)
     end
   end
