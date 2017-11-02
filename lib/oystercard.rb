@@ -1,17 +1,16 @@
-require 'journey'
+require './lib/journey.rb'
 
 # This is a simulation of an Oystercard system
 class Oystercard
   LIMIT = 90
   MINIMUM_FARE = 1
 
-  attr_reader :balance, :entry_station, :list_of_journeys, :j_class # :journey,
+  attr_reader :balance, :entry_station, :list_of_journeys, :trip
 
-  def initialize(j_class = Journey.new, balance = 0)
+  def initialize(trip = Journey.new, balance = 0)
     @balance = balance
     @list_of_journeys = []
-    #@journey = {}
-    @j_class = j_class
+    @trip = trip
   end
 
   def top_up(amount)
@@ -21,32 +20,20 @@ class Oystercard
 
   def touch_in(entry_station)
     raise 'Insufficient balance for travel' if @balance < MINIMUM_FARE
-    # 1 - complete
-    #@entry_station = entry_station
-    @j_class.set_entry(entry_station)
-    # 2 - complete
-    #@journey[entry_station]
-    @j_class.current_journey[entry_station]
+    @trip.set_entry(entry_station)
   end
 
   def touch_out(exit_station)
-    # 3 - complete
     deduct if in_journey?
-    # 4 - complete
-    #@journey[@entry_station] = exit_station
-    @j_class.current_journey[@j_class.entry] = exit_station
-    # 5 - complete
+    @trip.set_exit(exit_station)
     add_journey
-    #@j_class.add_journey
-    # 6 - complete
-    #@entry_station = nil
-    @j_class.set_entry(nil)
+    new_journey
   end
 
+
+
   def in_journey?
-    # 7 - complete
-    #@entry_station != nil
-    @j_class.in_journey?
+    @trip.in_journey?
   end
 
   def error_top_up
@@ -56,15 +43,14 @@ class Oystercard
   private
 
   def add_journey
-    # 8 - !!!!!!!!
-    #@list_of_journeys << @journey
-    @list_of_journeys << @j_class.current_journey
-    # 9 - !!!!!!!!
-    #@journey = {}
-    @j_class.clear_current_journey
+    @list_of_journeys << [@trip.entry_station , @trip.exit_station]
   end
 
   def deduct
     @balance -= MINIMUM_FARE
+  end
+
+  def new_journey
+    @trip = Journey.new
   end
 end

@@ -1,19 +1,20 @@
 class Journey
-  attr_reader :current_journey, :entry
+  attr_reader :entry_station, :exit_station
 
   def initialize
-    @current_journey = {}
+    @entry_station = nil
+    @exit_station = nil
   end
 
   def in_journey?
-    @entry != nil
+    @entry_station != nil
   end
 
   def set_entry(entry_station)
-    @entry = entry_station
+    @entry_station = entry_station
   end
 
-  def clear_current_journey
-    @current_journey = {}
+  def set_exit(exit_station)
+    @exit_station = exit_station
   end
 end
