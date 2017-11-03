@@ -19,22 +19,33 @@ class Oystercard
   end
 
   def touch_in(entry_station)
+    # if already in a journey,
+    # save and charge penalty for previous trip,
+    # create new trip
     if in_journey?
       deduct(@trip.fare)
+      # save incomplete journey
       add_journey
       new_journey
     end
-      raise 'Insufficient balance for travel' if @balance < @trip::MINIMUM_FARE
-      @trip.set_entry(entry_station)
+    raise 'Insufficient balance for travel' if @balance < Journey::MINIMUM_FARE
+    @trip.set_entry(entry_station)
   end
 
   def touch_out(exit_station)
-    if !in_journey?
-       deduct(@trip.fare)
+    # if there is already an exit_station,
+    # save and charge penalty for previous and current trip
+    if @trip.exit_station != nil
+      deduct(@trip.fare)
+      # save previous incomplete journey
+      # save this current incomplete
+      # charge penalty for this current incomplete
+
+    # if no penalty:
     else
-    deduct(@trip.fare) if in_journey?
+      @trip.set_exit(exit_station)
+      deduct(@trip.fare(Journey::MINIMUM_FARE))
     end
-    @trip.set_exit(exit_station)
     add_journey
     new_journey
   end

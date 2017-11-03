@@ -19,16 +19,16 @@ describe Journey do
 
   it 'knows if the journey is not complete' do
     top_up_touch_in
-    expect(journey.in_journey?).to eq true
+    expect(journey.journey_complete?).to eq(false)
   end
 
   it 'has a penalty fare by default' do
 
   end
 
-  # it "returns itself when exiting a journey" do
-  #
-  # end
+  it "returns itself when exiting a journey" do
+
+  end
 
   context 'given an entry station' do
     it 'has an entry station' do
@@ -47,7 +47,8 @@ describe Journey do
       end
 
       it 'knows if a journey is in-complete' do
-
+        in_and_out
+        expect(journey.journey_complete?).to eq (true)
       end
     end
 
