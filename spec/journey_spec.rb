@@ -1,9 +1,11 @@
 require './lib/journey.rb'
+require './lib/journeylog.rb'
 require './lib/oystercard.rb'
 
 describe Journey do
   subject(:journey) { described_class.new }
-  let(:card) { Oystercard.new(journey) }
+  let(:journey_log) { JourneyLog.new(journey) }
+  let(:card) { Oystercard.new(journey_log) }
   let(:station) { double(:station) }
   let(:station2) { double(:station2) }
 
@@ -59,19 +61,6 @@ describe Journey do
     it 'has an exit station' do
       in_and_out
       expect(journey.exit_station).to eq station
-    end
-  end
-
-  describe 'outputs' do
-    it 'returns itself when exiting a journey' do
-      in_and_out
-      expect(card.list_of_journeys[0]).to eq journey
-    end
-
-    it 'should save entry_station to nil when just a touch_out' do
-      card.top_up(50)
-      card.touch_out(station)
-      expect(card.list_of_journeys[0].entry_station).to eq nil
     end
   end
 end

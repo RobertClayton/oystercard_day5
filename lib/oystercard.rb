@@ -1,15 +1,15 @@
 require './lib/journey.rb'
+require './lib/journeylog.rb'
 
 # This is a simulation of an Oystercard system
 class Oystercard
   LIMIT = 90
 
-  attr_reader :balance, :entry_station, :list_of_journeys, :trip
+  attr_reader :balance, :journey_log
 
-  def initialize(trip = Journey.new, balance = 0)
+  def initialize(journey_log = JourneyLog.new, balance = 0)
     @balance = balance
-    @list_of_journeys = []
-    @trip = trip
+    @journey_log = journey_log
   end
 
   def top_up(amount)
@@ -18,29 +18,15 @@ class Oystercard
   end
 
   def touch_in(entry_station)
-    if in_journey?
-      deduct(@trip.fare)
-      add_journey
-      new_journey
-    end
+    touch_in_penalty
     raise 'Insufficient balance for travel' if @balance < Journey::MINIMUM_FARE
-    @trip.store_entry(entry_station)
+    @journey_log.start(entry_station)
   end
 
   def touch_out(exit_station)
-    if @trip.there_an_entry?
-      @trip.store_exit(exit_station)
-      deduct(@trip.fare)
-    else
-      @trip.store_exit(exit_station)
-      deduct(@trip.fare(Journey::MINIMUM_FARE))
-    end
-    add_journey
-    new_journey
-  end
-
-  def in_journey?
-    @trip.in_journey?
+    @journey_log.touch_out_penalty(exit_station)
+    charge_fare(exit_station) if @journey_log.there_a_penalty == false
+    touch_out_penalty(exit_station) if @journey_log.there_a_penalty
   end
 
   def error_top_up
@@ -49,15 +35,24 @@ class Oystercard
 
   private
 
-  def add_journey
-    @list_of_journeys << @trip
-  end
-
   def deduct(amount)
     @balance -= amount
   end
 
-  def new_journey
-    @trip = Journey.new
+  def touch_in_penalty
+    @journey_log.touch_in_penalty
+    deduct(@journey_log.fare) if @journey_log.there_a_penalty
+    @journey_log.reset_penalty
+  end
+
+  def touch_out_penalty(exit_station)
+    deduct(@journey_log.fare)
+    @journey_log.finish(exit_station)
+    @journey_log.reset_penalty
+  end
+
+  def charge_fare(exit_station)
+    @journey_log.finish(exit_station)
+    deduct(@journey_log.fare(Journey::MINIMUM_FARE))
   end
 end

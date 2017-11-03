@@ -14,7 +14,7 @@ class Journey
     @entry_station != nil
   end
 
-  def there_an_entry?
+  def there_no_entry_station?
     @entry_station.nil?
   end
 

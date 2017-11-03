@@ -1,14 +1,16 @@
 require './lib/oystercard.rb'
 require './lib/journey.rb'
+require './lib/journeylog.rb'
 
 describe Oystercard do
-  subject(:oystercard) { described_class.new }
   let(:journey) { Journey.new }
-  let(:topped_up_card) { described_class.new(journey) }
+  let(:journey_log) { JourneyLog.new(journey) }
+  subject(:oystercard) { described_class.new(journey_log) }
+  let(:topped_up_card) { described_class.new(journey_log) }
   let(:station) { double(:station) }
 
   before do
-    topped_up_card.top_up(5)
+    topped_up_card.top_up(50)
   end
 
   def in_out
@@ -26,13 +28,13 @@ describe Oystercard do
     end
 
     it 'should create a list of journeys with an empty array' do
-      expect(subject.list_of_journeys).to eq []
+      expect(subject.journey_log.journeys).to eq []
     end
   end
 
   describe '#top_up' do
     it 'Check if @balance increase after top_up' do
-      expect(topped_up_card.balance).to eq(5)
+      expect(topped_up_card.balance).to eq(50)
     end
 
     it 'top_up raise error when above the limit' do
@@ -46,7 +48,7 @@ describe Oystercard do
   describe '#touch_in' do
     it 'should change in journey to true' do
       top_and_in
-      expect(topped_up_card.in_journey?).to eq true
+      expect(topped_up_card.journey_log.in_journey?).to eq true
     end
 
     it 'raises error if balance is less than minimum' do
@@ -58,37 +60,31 @@ describe Oystercard do
   describe '#touch_out' do
     it 'should change in journey to false' do
       in_out
-      expect(topped_up_card.in_journey?).to eq false
+      expect(topped_up_card.journey_log.in_journey?).to eq false
     end
 
     it 'check if touch_out reduce balance by minumum fare' do
       in_out
-      expect(topped_up_card.balance).to eq(4)
-    end
-
-    it 'should set entry station to nil' do
-      in_out
-      expect(topped_up_card.entry_station).to eq nil
-    end
-  end
-
-  describe '#in_journey?' do
-    it 'Check if the card is in use or not.' do
-      top_and_in
-      expect(topped_up_card.in_journey?).to eq(true)
+      expect(topped_up_card.balance).to eq(49)
     end
   end
 
   describe '#list_of_journeys' do
     it 'should store a journey' do
       in_out
-      expect(topped_up_card.list_of_journeys[0]).to eq journey
+      expect(topped_up_card.journey_log.journeys[0]).to eq journey
     end
 
-    it 'should save entry_station to nil when just a touch_out' do
+    it 'should save entry_station as nil when just a touch_out' do
       subject.top_up(50)
       subject.touch_out(station)
-      expect(subject.list_of_journeys[0].entry_station).to eq nil
+      expect(subject.journey_log.journeys[0].entry_station).to eq nil
+    end
+
+    it 'should save exit_station as nil when just a touch_in' do
+      top_and_in
+      topped_up_card.touch_in(station)
+      expect(subject.journey_log.journeys[0].exit_station).to eq nil
     end
   end
 end
