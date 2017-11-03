@@ -29,6 +29,7 @@ class Oystercard
 
   def touch_out(exit_station)
     if @trip.there_an_entry?
+      @trip.store_exit(exit_station)
       deduct(@trip.fare)
     else
       @trip.store_exit(exit_station)
