@@ -1,8 +1,10 @@
 require './lib/oystercard.rb'
+require './lib/journey.rb'
 
 describe Oystercard do
   subject(:oystercard) { described_class.new }
-  let(:topped_up_card) { described_class.new }
+  let(:journey) { Journey.new }
+  let(:topped_up_card) { described_class.new(journey) }
   let(:station) { double(:station) }
 
   before do
@@ -10,12 +12,12 @@ describe Oystercard do
   end
 
   def in_out
-    topped_up_card.touch_in(:station)
-    topped_up_card.touch_out(:station)
+    topped_up_card.touch_in(station)
+    topped_up_card.touch_out(station)
   end
 
   def top_and_in
-    topped_up_card.touch_in(:station)
+    topped_up_card.touch_in(station)
   end
 
   describe 'initialize' do
@@ -49,7 +51,7 @@ describe Oystercard do
 
     it 'raises error if balance is less than minimum' do
       message = 'Insufficient balance for travel'
-      expect { subject.touch_in(:station) }.to raise_error(message)
+      expect { subject.touch_in(station) }.to raise_error(message)
     end
   end
 
@@ -78,13 +80,15 @@ describe Oystercard do
   end
 
   describe '#list_of_journeys' do
-    it 'should store a list of journeys' do
-      topped_up_card.touch_in('A')
-      topped_up_card.touch_out('B')
-      topped_up_card.touch_in('C')
-      topped_up_card.touch_out('D')
-      expected_hash = [['A','B'],['C', 'D']]
-      expect(topped_up_card.list_of_journeys).to eq(expected_hash)
+    it 'should store a journey' do
+      in_out
+      expect(topped_up_card.list_of_journeys[0]).to eq journey
+    end
+
+    it 'should save entry_station to nil when just a touch_out' do
+      subject.top_up(50)
+      subject.touch_out(station)
+      expect(subject.list_of_journeys[0].entry_station).to eq nil
     end
   end
 end

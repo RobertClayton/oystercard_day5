@@ -1,26 +1,28 @@
+# this is one journey for use with Oystercard
 class Journey
   attr_reader :entry_station, :exit_station
+
   MINIMUM_FARE = 1
   PENALTY = 6
- #
+
   def initialize
     @entry_station = nil
     @exit_station = nil
   end
 
   def in_journey?
-    @entry_station != nil && @exit_station == nil ? true : false
+    @entry_station != nil
   end
 
-  def journey_complete?
-    @entry_station != nil && @exit_station != nil ? true : false
+  def there_an_entry?
+    @entry_station.nil?
   end
 
-  def set_entry(entry_station)
+  def store_entry(entry_station)
     @entry_station = entry_station
   end
 
-  def set_exit(exit_station)
+  def store_exit(exit_station)
     @exit_station = exit_station
   end
 

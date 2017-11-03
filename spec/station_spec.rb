@@ -1,7 +1,6 @@
 require './lib/station.rb'
 
 describe Station do
-
   subject(:station) { described_class.new('abc', 1) }
 
   describe 'initialize' do
